@@ -24,4 +24,9 @@ Route::get('/', function () {
 // require __DIR__.'/auth.php';
 
 use App\Http\Controllers\AnimeController;
+use App\Http\Controllers\FailController;
+
 Route::resource('animes', AnimeController::class);
+
+
+Route::resource('fails', FailController::class);

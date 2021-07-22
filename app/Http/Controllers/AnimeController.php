@@ -2,8 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NewAnime;
 use App\Models\Anime;
+use GrahamCampbell\ResultType\Result;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
+
+use Illuminate\Support\Facades\Mail;
+
 
 class AnimeController extends Controller
 {
@@ -15,9 +21,14 @@ class AnimeController extends Controller
     public function index()
     {
         //
+
+        $response = Http::get('https://swapi.dev/api/people/?page=2');
+        $response_json = $response->json();
+
         $animes = Anime::all();
         return view('animes.index',[
-            'animes'=>$animes
+            'animes'=>$animes,
+            'apiData' => $response_json['results']
         ]);
     }
 
@@ -46,9 +57,16 @@ class AnimeController extends Controller
         $anime->episod = $request->episod;
         $anime->tahun = $request->tahun;
 
+        // $anime->file_path = $request->gambar;
+
         $anime->studio_id = $request->studio_id;
 
         $anime->save();
+
+        foreach (['iszmael97@gmail.com', 'profis4457029@gmail.com'] as $recipient) {
+            Mail::to($recipient)->send(new NewAnime());
+        }
+
 
         return redirect('/animes/');
     }
